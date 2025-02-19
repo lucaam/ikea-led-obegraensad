@@ -1,0 +1,55 @@
+name: Create GitHub Release
+
+on:
+  push:
+    tags:
+      - 'v.*.*.*'  # Trigger quando viene pushato un tag, es. v1.0.0
+
+jobs:
+  release:
+    name: Release Firmware
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Download ESP32 firmware
+        uses: actions/download-artifact@v3
+        with:
+          name: esp32dev_firmware
+          path: ./builds/
+
+      - name: Download ESP8266 firmware (nodemcuv2)
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+        with:
+          name: nodemcuv2_firmware
+          path: ./builds/
+
+      - name: Download ESP8266 firmware (d1_mini_pro-ota)
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+        with:
+          name: d1_mini_pro_ota_firmware
+          path: ./builds/
+
+      - name: Get version from tag
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF##*/}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
+          draft: true
+          prerelease: true
+          files: |
+            ./builds/esp32dev_firmware.bin
+            ./builds/nodemcuv2_firmware.bin
+            ./builds/d1_mini_pro_ota_firmware.bin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
