@@ -56,7 +56,7 @@ jobs:
           mv ./.pio/build/esp32dev/firmware.bin ./builds/esp32dev_firmware.bin
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: esp32dev_firmware
           path: ./builds/esp32dev_firmware.bin
@@ -117,7 +117,7 @@ jobs:
           mv ./.pio/build/${{ matrix.environment }}/firmware.bin ./builds/${{ matrix.artifact_name }}.bin
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
           path: ./builds/${{ matrix.artifact_name }}.bin
